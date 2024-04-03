@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vue</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="app">
+        <h1>Создание записей</h1>
+        <div class="form">
+            <input v-model="title" type="text" placeholder="Title">
+            <input v-model="content" type="text" placeholder="Content">
+            <button v-on:click="addPost">Create</button>
+            <button v-on:click="openModal">Добавить запись через модальное окно</button>
+        </div>
+        <h1>Список статей</h1>
+        <div class="posts">
+            <div v-for="post in posts" :key="post.id" class="post">
+                <h3>Название: <i>{{ post.title }}</i></h3>
+                <p>Описание: <i>{{ post.content }}</i></p>
+                <button @click="deletePost(post.id)">Delete</button>
+            </div>
+        </div>
+
+        <div v-if="showModal" class="modal" @click.self="closeModal">
+            <div class="modal-content">
+                <button class="close" @click="closeModal">Close</button>
+                <h2>Добавить новую запись</h2>
+                <form @submit.prevent="addPostInModal">
+                    <label for="title">Заголовок:</label>
+                    <input type="text" v-model="newPost.title" required>
+                    
+                    <label for="content">Содержание:</label>
+                    <input type="text" v-model="newPost.content" required>
+
+                    <button type="submit">Добавить запись</button>
+                </form>
+            </div>
+        </div>
+    
+    </div>
+
+    <script src="js/vue.global.js"></script>
+    <script>
+        const { createApp } = Vue;
+        
+        createApp({
+            data() {
+                return {
+                    posts: [
+                        {id: 1, title: 'Js1', content: 'Описание js1'},
+                        {id: 2, title: 'Js2', content: 'Описание js2'},
+                        {id: 3, title: 'Js3', content: 'Описание js3'},
+                    ],
+                    title: '',
+                    content: '',
+                    showModal: false,
+                    newPost: {
+                        title: '',
+                        content: ''
+                    }
+                }
+            },
+            methods: {
+                addPost() {
+                    this.posts.push({
+                        id: Date.now(),
+                        title: this.title,
+                        content: this.content,
+                    });
+                    this.title = '';
+                    this.content = '';
+                },
+                addPostInModal() {
+                    this.posts.push({
+                        id: Date.now(),
+                        title: this.newPost.title,
+                        content: this.newPost.content,
+                    });
+                    this.newPost.title = '';
+                    this.newPost.content = '';
+                    this.closeModal();
+                },
+                deletePost(id) {
+                    this.posts = this.posts.filter(post => post.id !== id);
+                },
+                openModal() {
+                    this.showModal = true;
+                },
+                closeModal() {
+                    this.showModal = false;
+                    this.newPost.title = '';
+                    this.newPost.content = '';
+                }
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>
